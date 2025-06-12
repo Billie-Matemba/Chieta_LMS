@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from users.views import custom_login, custom_logout, admin_dashboard, assessor_dev_dashboard, assessor_marker_dashboard, internal_moderator_dashboard, moderator_dev_dashboard, etqa_dashboard, qcto_dashboard, learner_dashboard, databank, users, centre, marker_analytics, marker_batch, assessment_archive, assessor_reports, generate_tool, upload_assessment, view_assessment, qcto_archive, qcto_assessment_review, qcto_compliance, qcto_compliance_check, qcto_report, qcto_view_assessment, learner_assessment, learner_notification, learner_online_learning, learner_previous_assessment, learner_previous_paper, learner_trial_assessment, create_qualification, create_user, toggle_user_status, delete_qualification, delete_user, update_user
+from users.views import custom_login, custom_logout, admin_dashboard, assessor_dev_dashboard, assessor_marker_dashboard, internal_moderator_dashboard, moderator_dev_dashboard, etqa_dashboard, qcto_dashboard, learner_dashboard, databank, users, centre, marker_analytics, marker_batch, assessment_archive, assessor_reports, generate_tool, upload_assessment, view_assessment, qcto_archive, qcto_assessment_review, qcto_compliance, qcto_compliance_check, qcto_report, qcto_view_assessment, learner_assessment, learner_notification, learner_online_learning, learner_previous_assessment, learner_previous_paper, learner_trial_assessment, create_qualification, create_user, toggle_user_status, delete_user, update_user, toggle_qualification_status
 
 urlpatterns = [
     path('admin/', admin.site.urls), 
@@ -24,16 +24,23 @@ urlpatterns = [
 
     # admin paths 
     path('dashboard/admin/', admin_dashboard, name='admin_dashboard'),
+   # Admin dashboard paths
     path('dashboard/admin/centre/', centre, name='centre'),
     path('dashboard/admin/users/', users, name='users'),
     path('dashboard/admin/databank/', databank, name='databank'),
-
-    path('dashboard/admin/create-user/', create_user, name='create_user'),
-    path('dashboard/admin/toggle-user/<int:user_id>/', toggle_user_status, name='toggle_user_status'),
+    
+    # User-related paths
+     path('dashboard/admin/create-user/', create_user, name='create_user'),
+    path('dashboard/admin/users/<int:user_id>/toggle/', toggle_user_status, name='toggle_user_status'),
+    path('dashboard/admin/users/<int:user_id>/update/', update_user, name='update_user'),
+    path('dashboard/admin/users/<int:user_id>/delete/', delete_user, name='delete_user'),
+    
+    # Qualification-related paths
+    #path('dashboard/admin/qualifications/create/', create_qualification, name='admin_create_qualification'),
     path('dashboard/admin/create-qualification/', create_qualification, name='create_qualification'),
-    path('qualification/delete/<int:qualification_id>/', delete_qualification, name='delete_qualification'),
-    path('user/delete/<int:user_id>/', delete_user, name='delete_user'),
-    path('users/<int:user_id>/update/', update_user, name='update_user'),
+    path('dashboard/admin/qualifications/<int:qualification_id>/toggle/', 
+         toggle_qualification_status, 
+         name='toggle_qualification_status'),
 
     # assessor paths
     path('dashboard/assessor/', assessor_marker_dashboard, name='assessor_marker_dashboard'),

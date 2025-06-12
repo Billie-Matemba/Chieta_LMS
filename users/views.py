@@ -6,6 +6,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.core.mail import send_mail
 from django.utils.timezone import now
 from django.contrib import messages
+from django.core.exceptions import ValidationError 
 import random, string
 
 from .models import CustomUser, Qualification
@@ -51,42 +52,53 @@ def custom_login(request):
 @login_required
 @staff_member_required
 def users(request):
-    user_list = CustomUser.objects.exclude(is_superuser=True)
-    predefined_qualifications = Qualification.objects.filter(
-        qualification_type__in=Qualification.QUALIFICATION_SAQA_MAPPING.keys()
-    )
-    custom_qualifications = Qualification.objects.exclude(
-        qualification_type__in=Qualification.QUALIFICATION_SAQA_MAPPING.keys()
-    )
+    # Get status filter from URL (default to showing active qualifications)
+    status_filter = request.GET.get('status', 'active')
     
-    role_choices = CustomUser.ROLE_CHOICES
-    qualification_type_choices = Qualification.QUALIFICATION_CHOICES  
+    # Filter qualifications based on status
+    qualifications = Qualification.objects.all()
+    if status_filter == 'active':
+        qualifications = qualifications.filter(is_active=True)
+    elif status_filter == 'inactive':
+        qualifications = qualifications.filter(is_active=False)
+    # 'all' shows all qualifications (no filter applied)
+    
+    # Get user list (excluding superusers)
+    user_list = CustomUser.objects.exclude(is_superuser=True)
     
     return render(request, 'admin/users.html', {
         'users': user_list,
-        'predefined_qualifications': predefined_qualifications,
-        'custom_qualifications': custom_qualifications,
-        'role_choices': role_choices,
-        'qualification_type_choices': qualification_type_choices  
+        'qualifications': qualifications,
+        'role_choices': CustomUser.ROLE_CHOICES,
+        'current_status_filter': status_filter  # Pass the current filter to template
     })
-
-# create users view
+#create user view
 @login_required
 @staff_member_required
 def create_user(request):
     if request.method == 'POST':
-        first_name = request.POST.get('first_name')
-        last_name = request.POST.get('last_name')
-        email = request.POST.get('email')
+        first_name = request.POST.get('first_name').strip()
+        last_name = request.POST.get('last_name').strip()
+        email = request.POST.get('email').strip().lower()
         role = request.POST.get('role')
-        qualification_id = request.POST.get('qualification')  # This can be None
+        qualification_id = request.POST.get('qualification')  # Can be None/empty
+        
+        # Input validation
+        if not all([first_name, last_name, email, role]):
+            messages.error(request, 'All required fields must be filled')
+            return redirect('users')
         
         # Generate random password
         password = ''.join(random.choices(string.ascii_letters + string.digits, k=10))
         
         try:
-            # Get qualification if provided, otherwise None
-            qualification = Qualification.objects.get(id=qualification_id) if qualification_id else None
+            # Get qualification if provided (and exists)
+            qualification = None
+            if qualification_id:
+                try:
+                    qualification = Qualification.objects.get(id=qualification_id, is_active=True)
+                except Qualification.DoesNotExist:
+                    messages.warning(request, 'Selected qualification not found or inactive - user created without qualification')
             
             user = CustomUser.objects.create_user(
                 username=email,
@@ -95,22 +107,28 @@ def create_user(request):
                 email=email,
                 role=role,
                 qualification=qualification,
-                activated_at=now(),
+                password=password,  # Set password directly in create_user
                 is_active=True,
+                activated_at=now(),
             )
-            user.set_password(password)
-            user.save()
             
-            # Send email with password
+            # Send email with credentials
             send_mail(
-                'Your CHIETA LMS Password',
-                f'Hi {first_name}, your password is: {password}',
+                'Your CHIETA LMS Account Details',
+                f'''Hi {first_name},
+                
+Your CHIETA LMS account has been created:
+Email: {email}
+Password: {password}
+
+Please change your password after first login.
+                ''',
                 'noreply@chieta.co.za',
                 [email],
                 fail_silently=False,
             )
             
-            messages.success(request, f'User {email} created successfully')
+            messages.success(request, f'User {email} created successfully. Password emailed.')
         except Exception as e:
             messages.error(request, f'Error creating user: {str(e)}')
     
@@ -135,39 +153,53 @@ def toggle_user_status(request, user_id):
 @staff_member_required
 def create_qualification(request):
     if request.method == 'POST':
-        name = request.POST.get('name')
-        saqa_id = request.POST.get('saqa_id')
-        qualification_type = request.POST.get('qualification_type')
+        name = request.POST.get('name').strip()
+        saqa_id = request.POST.get('saqa_id').strip()
         
-        if name and saqa_id and qualification_type:
+        if not (name and saqa_id):  # Check if required fields are filled
+            messages.error(request, 'Name and SAQA ID are required')
+            return redirect('users')
+            
+        try:
+            # Check for uniqueness before creation
+            if Qualification.objects.filter(name=name).exists():
+                messages.error(request, 'A qualification with this name already exists')
+                return redirect('users')
+                
+            if Qualification.objects.filter(saqa_id=saqa_id).exists():
+                messages.error(request, 'A qualification with this SAQA ID already exists')
+                return redirect('users')
+            
+            # Create the qualification (is_active=True by default from model)
             Qualification.objects.create(
                 name=name,
-                saqa_id=saqa_id,
-                qualification_type=qualification_type
+                saqa_id=saqa_id
             )
-            messages.success(request, 'Qualification created successfully')
-        else:
-            messages.error(request, 'Please fill all required fields')
+            messages.success(request, f'Qualification "{name}" created successfully')
+            
+        except Exception as e:
+            messages.error(request, f'Error creating qualification: {str(e)}')
     
     return redirect('users')
 
-# view to delete qualification but not the predefined one
+# view to activate or deactivate qualification (toggle)
 @login_required
 @staff_member_required
-def delete_qualification(request, qualification_id):
-    if request.method == 'POST':
-        try:
-            qualification = get_object_or_404(Qualification, id=qualification_id)
-            
-            if qualification.is_predefined():
-                messages.error(request, 'Cannot delete predefined qualifications')
-            else:
-                name = qualification.name
-                qualification.delete()
-                messages.success(request, f'Qualification "{name}" deleted successfully')
-                
-        except Exception as e:
-            messages.error(request, f'Error deleting qualification: {str(e)}')
+def toggle_qualification_status(request, qualification_id):
+    try:
+        qualification = Qualification.objects.get(id=qualification_id)
+        
+        # Toggle the is_active status
+        qualification.is_active = not qualification.is_active
+        qualification.save()
+        
+        action = "activated" if qualification.is_active else "deactivated"
+        messages.success(request, f'Qualification "{qualification.name}" has been {action}')
+        
+    except Qualification.DoesNotExist:
+        messages.error(request, 'Qualification not found')
+    except Exception as e:
+        messages.error(request, f'Error updating qualification: {str(e)}')
     
     return redirect('users')
     
@@ -192,27 +224,37 @@ def update_user(request, user_id):
     user = get_object_or_404(CustomUser, id=user_id)
     
     if request.method == 'POST':
-        user.first_name = request.POST.get('first_name', user.first_name)
-        user.last_name = request.POST.get('last_name', user.last_name)
-        user.email = request.POST.get('email', user.email)
-        user.role = request.POST.get('role', user.role)
-        
-        # Handle qualification change
-        new_qualification_id = request.POST.get('qualification')
-        if new_qualification_id:
-            new_qualification = get_object_or_404(Qualification, id=new_qualification_id)
-            user.qualification = new_qualification
-        
         try:
+            # Update basic fields
+            user.first_name = request.POST.get('first_name', user.first_name).strip()
+            user.last_name = request.POST.get('last_name', user.last_name).strip()
+            user.email = request.POST.get('email', user.email).strip().lower()
+            user.role = request.POST.get('role', user.role)
+            
+            # Handle qualification change (including clearing it)
+            new_qualification_id = request.POST.get('qualification')
+            if new_qualification_id == '':  # Empty string means remove qualification
+                user.qualification = None
+            elif new_qualification_id:  # New qualification selected
+                new_qualification = get_object_or_404(Qualification, id=new_qualification_id, is_active=True)
+                user.qualification = new_qualification
+            
+            # Email uniqueness check (if email changed)
+            if CustomUser.objects.exclude(id=user.id).filter(email=user.email).exists():
+                messages.error(request, 'This email is already in use by another user')
+                return redirect('users')
+            
             user.save()
             messages.success(request, f'User {user.email} updated successfully')
+            
+        except ValidationError as e:
+            messages.error(request, f'Validation error: {str(e)}')
         except Exception as e:
             messages.error(request, f'Error updating user: {str(e)}')
         
         return redirect('users')
     
-    # For GET requests, you might want to render a form
-    return redirect('users')  # Or render a specific update template
+    return redirect('users')  # GET requests redirect back
 
 # GENERAL DASHBOARD
 @login_required

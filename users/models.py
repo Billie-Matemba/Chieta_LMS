@@ -5,43 +5,14 @@ from django.core.exceptions import ValidationError
 
 # Qualification creation    
 class Qualification(models.Model):
-    QUALIFICATION_CHOICES = [
-        ('Maintenance Planner', 'Maintenance Planner'),
-        ('Quality Controller', 'Quality Controller'),
-        ('Chemical Plant', 'Chemical Plant'),
-    ]
-
-    QUALIFICATION_SAQA_MAPPING = {
-        'Maintenance Planner': '101874',
-        'Quality Controller': '117309',
-        'Chemical Plant': '102156',
-    }
-    
     name = models.CharField(max_length=100, unique=True)
     saqa_id = models.CharField(max_length=20, unique=True)
-    qualification_type = models.CharField(
-        max_length=50,
-        choices=QUALIFICATION_CHOICES,
-        default='Chemical Plant',
-    )
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.name} - SAQA ID: {self.saqa_id}"
-
-    def clean(self):
-        """Validate SAQA ID matches predefined mapping"""
-        if self.qualification_type in self.QUALIFICATION_SAQA_MAPPING:
-            expected_saqa_id = self.QUALIFICATION_SAQA_MAPPING[self.qualification_type]
-            if self.saqa_id != expected_saqa_id:
-                raise ValidationError(
-                    f"SAQA ID for {self.qualification_type} must be {expected_saqa_id}"
-                )
-            
-    def is_predefined(self):
-        """Check if this is one of the predefined qualifications"""
-        return self.qualification_type in self.QUALIFICATION_SAQA_MAPPING.keys()
     
 # User creation   
 class CustomUser(AbstractUser):
@@ -51,7 +22,7 @@ class CustomUser(AbstractUser):
         ('moderator', 'Moderator (Developer)'),
         ('qcto', 'QCTO Validator'),
         ('etqa', 'ETQA'),
-        ('learner', 'Learner'),  # Fixed typo (was 'Learner')
+        ('learner', 'Learner'),  
         ('assessor_marker', 'Assessor (Marker)'),
         ('internal_mod', 'Internal Moderator'),
         ('external_mod', 'External Moderator (QALA)'),
