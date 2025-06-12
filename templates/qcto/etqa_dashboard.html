@@ -1,0 +1,956 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETQA Implementation | CHIETA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --dark-purple: #3c1c53;
+            --gold: #bb8641;
+            --light-gray: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-gray);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(to bottom, #f1f1f1, white, #e0e0e0, #f5f5f5, #3c1c53);
+            padding: 20px;
+            color: var(--dark-purple);
+            border-right: 1px solid var(--gold);
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar-header img {
+            max-width: 80%;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-header h4 {
+            color: var(--dark-purple);
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu li a {
+            display: block;
+            padding: 10px 15px;
+            color: var(--dark-purple);
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s;
+        }
+
+        .sidebar-menu li a:hover {
+            background-color: rgba(60, 28, 83, 0.1);
+        }
+
+        .sidebar-menu li a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-menu li.active a {
+            background-color: var(--dark-purple);
+            color: white;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 20px;
+        }
+
+        .btn-purple {
+            background-color: var(--dark-purple);
+            color: white;
+            border: none;
+        }
+
+        .btn-purple:hover {
+            background-color: #2d1540;
+            color: white;
+        }
+
+        .btn-gold {
+            background-color: var(--gold);
+            color: white;
+            border: none;
+        }
+
+        .btn-gold:hover {
+            background-color: #a67738;
+            color: white;
+        }
+
+        .calendar-day {
+            border: 1px solid #dee2e6;
+            height: 120px;
+            padding: 5px;
+            overflow-y: auto;
+            cursor: pointer;
+        }
+
+        .calendar-day.today {
+            background-color: #f0f8ff;
+        }
+
+        .calendar-day-header {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--dark-purple);
+        }
+
+        .assessment-event {
+            background-color: #f5e9dc;
+            border-left: 3px solid var(--gold);
+            padding: 2px 5px;
+            margin-bottom: 2px;
+            font-size: 0.75rem;
+            border-radius: 3px;
+        }
+
+        .completion-progress {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+
+        .completion-progress-bar {
+            background-color: var(--gold);
+            border-radius: 5px;
+        }
+
+        .card {
+            border: none;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .nav-tabs .nav-link {
+            color: var(--dark-purple);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--dark-purple);
+            font-weight: bold;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .modal-content {
+            border: none;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            background-color: var(--dark-purple);
+            color: white;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="{% static 'images/logo_simplebbbbbbbbbbbbbb.png' %}" alt="CHIETA Logo">
+                <h4>ETQA Implementation</h4>
+                <p class="text-muted">Assessment Coordination</p>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="active">
+                    <a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-building"></i> Assessment Centers</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-calendar-alt"></i> Scheduling</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-users"></i> Learner Batches</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-chart-line"></i> Completion Tracking</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-cog"></i> Configuration</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">ETQA Implementation Dashboard</h2>
+                <div>
+                    <button class="btn btn-gold me-2" id="newCycleBtn">
+                        <i class="fas fa-plus"></i> New Assessment Cycle
+                    </button>
+                    <button class="btn btn-purple" id="exportBtn">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted">Active Centers</h6>
+                            <h3 class="mb-0" id="activeCentersCount">24</h3>
+                            <div class="completion-progress mt-2">
+                                <div class="completion-progress-bar" style="width: 80%"></div>
+                            </div>
+                            <small class="text-muted">+3 this quarter</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted">Scheduled Batches</h6>
+                            <h3 class="mb-0" id="scheduledBatchesCount">48</h3>
+                            <div class="completion-progress mt-2">
+                                <div class="completion-progress-bar" style="width: 65%"></div>
+                            </div>
+                            <small class="text-muted">June cycle: 32</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted">Learners Registered</h6>
+                            <h3 class="mb-0" id="learnersRegisteredCount">1,245</h3>
+                            <div class="completion-progress mt-2">
+                                <div class="completion-progress-bar" style="width: 45%"></div>
+                            </div>
+                            <small class="text-muted">Target: 2,800</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title text-muted">Completions</h6>
+                            <h3 class="mb-0" id="completionsCount">876</h3>
+                            <div class="completion-progress mt-2">
+                                <div class="completion-progress-bar" style="width: 72%"></div>
+                            </div>
+                            <small class="text-muted">Q2 2024</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batch Scheduling -->
+            <div class="row">
+                <div class="col-md-8">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-calendar-alt"></i> Assessment Calendar - June 2024 Cycle</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="assessmentCalendar">
+                                    <thead>
+                                        <tr>
+                                            <th>Sun</th>
+                                            <th>Mon</th>
+                                            <th>Tue</th>
+                                            <th>Wed</th>
+                                            <th>Thu</th>
+                                            <th>Fri</th>
+                                            <th>Sat</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="calendar-day"></td>
+                                            <td class="calendar-day"></td>
+                                            <td class="calendar-day"></td>
+                                            <td class="calendar-day"></td>
+                                            <td class="calendar-day"></td>
+                                            <td class="calendar-day"></td>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">1</div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">2</div>
+                                            </td>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">3</div>
+                                            </td>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">4</div>
+                                                <div class="assessment-event">Electrician - TSA (12 learners)</div>
+                                            </td>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">5</div>
+                                            </td>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">6</div>
+                                                <div class="assessment-event">Fitter - ETI (8 learners)</div>
+                                            </td>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">7</div>
+                                            </td>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">8</div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">9</div>
+                                            </td>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">10</div>
+                                            </td>
+                                            <td class="calendar-day today">
+                                                <div class="calendar-day-header">11</div>
+                                                <div class="assessment-event">Maintenance Planner - VAC (15 learners)</div>
+                                            </td>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">12</div>
+                                            </td>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">13</div>
+                                                <div class="assessment-event">Welder - TSA (10 learners)</div>
+                                            </td>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">14</div>
+                                            </td>
+                                            <td class="calendar-day">
+                                                <div class="calendar-day-header">15</div>
+                                            </td>
+                                        </tr>
+                                        <!-- More calendar rows would appear here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-3">
+                                <button class="btn btn-gold" id="scheduleAssessmentBtn">
+                                    <i class="fas fa-plus"></i> Schedule Assessment
+                                </button>
+                                <button class="btn btn-outline-secondary ms-2" id="printScheduleBtn">
+                                    <i class="fas fa-print"></i> Print Schedule
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-users"></i> Batch Assignment</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Select Assessment Center</label>
+                                <select class="form-select" id="centerSelect">
+                                    <option>Technical Skills Academy</option>
+                                    <option>Engineering Training Institute</option>
+                                    <option>Vocational Assessment College</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Qualification</label>
+                                <select class="form-select" id="qualificationSelect">
+                                    <option>Maintenance Planner</option>
+                                    <option>Electrician</option>
+                                    <option>Fitter and Turner</option>
+                                    <option>Welder</option>
+                                    <option>Instrument Mechanic</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Assessment Date</label>
+                                <input type="date" class="form-control" id="assessmentDate" value="2024-06-18">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Learner List</label>
+                                <textarea class="form-control" id="learnerList" rows="5" placeholder="Paste learner IDs (one per line) or upload CSV"></textarea>
+                            </div>
+                            <button class="btn btn-gold w-100" id="createBatchBtn">
+                                <i class="fas fa-save"></i> Create Batch
+                            </button>
+                            <button class="btn btn-outline-secondary w-100 mt-2" id="uploadCsvBtn">
+                                <i class="fas fa-upload"></i> Upload CSV
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completion Tracking -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> Completion Tracking</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-tabs" id="completionTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="quarterly-tab" data-bs-toggle="tab" data-bs-target="#quarterly" type="button" role="tab">Quarterly</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="qualification-tab" data-bs-toggle="tab" data-bs-target="#qualification" type="button" role="tab">By Qualification</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="center-tab" data-bs-toggle="tab" data-bs-target="#center" type="button" role="tab">By Center</button>
+                        </li>
+                    </ul>
+                    <div class="tab-content mt-3" id="completionTabsContent">
+                        <div class="tab-pane fade show active" id="quarterly" role="tabpanel">
+                            <div class="chart-container">
+                                <canvas id="quarterlyChart"></canvas>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Quarter</th>
+                                            <th>Scheduled</th>
+                                            <th>Completed</th>
+                                            <th>Completion Rate</th>
+                                            <th>Avg. Duration</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="quarterlyData">
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="qualification" role="tabpanel">
+                            <div class="chart-container">
+                                <canvas id="qualificationChart"></canvas>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Qualification</th>
+                                            <th>Scheduled</th>
+                                            <th>Completed</th>
+                                            <th>Completion Rate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="qualificationData">
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="center" role="tabpanel">
+                            <div class="chart-container">
+                                <canvas id="centerChart"></canvas>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Center</th>
+                                            <th>Scheduled</th>
+                                            <th>Completed</th>
+                                            <th>Completion Rate</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="centerData">
+                                        <!-- Data will be populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Assessment Modal -->
+    <div class="modal fade" id="scheduleAssessmentModal" tabindex="-1" aria-labelledby="scheduleAssessmentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="scheduleAssessmentModalLabel">Schedule New Assessment</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="scheduleAssessmentForm">
+                        <div class="mb-3">
+                            <label for="scheduleCenter" class="form-label">Assessment Center</label>
+                            <select class="form-select" id="scheduleCenter" required>
+                                <option value="">Select Center</option>
+                                <option>Technical Skills Academy</option>
+                                <option>Engineering Training Institute</option>
+                                <option>Vocational Assessment College</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="scheduleQualification" class="form-label">Qualification</label>
+                            <select class="form-select" id="scheduleQualification" required>
+                                <option value="">Select Qualification</option>
+                                <option>Maintenance Planner</option>
+                                <option>Electrician</option>
+                                <option>Fitter and Turner</option>
+                                <option>Welder</option>
+                                <option>Instrument Mechanic</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="scheduleDate" class="form-label">Assessment Date</label>
+                            <input type="date" class="form-control" id="scheduleDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="scheduleLearners" class="form-label">Number of Learners</label>
+                            <input type="number" class="form-control" id="scheduleLearners" min="1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="scheduleNotes" class="form-label">Notes</label>
+                            <textarea class="form-control" id="scheduleNotes" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-gold" id="confirmScheduleBtn">Schedule Assessment</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSV Upload Modal -->
+    <div class="modal fade" id="csvUploadModal" tabindex="-1" aria-labelledby="csvUploadModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="csvUploadModalLabel">Upload Learner CSV</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="csvUploadForm">
+                        <div class="mb-3">
+                            <label for="csvFile" class="form-label">Select CSV File</label>
+                            <input class="form-control" type="file" id="csvFile" accept=".csv" required>
+                        </div>
+                        <div class="alert alert-info">
+                            <small>CSV should contain one column with learner IDs. No header row needed.</small>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-gold" id="confirmUploadBtn">Upload CSV</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+    // Initialize variables
+    let scheduledAssessments = [
+        { date: '2024-06-04', center: 'TSA', qualification: 'Electrician', learners: 12 },
+        { date: '2024-06-06', center: 'ETI', qualification: 'Fitter and Turner', learners: 8 },
+        { date: '2024-06-11', center: 'VAC', qualification: 'Maintenance Planner', learners: 15 },
+        { date: '2024-06-13', center: 'TSA', qualification: 'Welder', learners: 10 }
+    ];
+
+    let learnerBatches = [];
+    let completionData = {
+        quarterly: [
+            { quarter: 'Q1 2024', scheduled: 1150, completed: 876, duration: 14 },
+            { quarter: 'Q4 2023', scheduled: 980, completed: 842, duration: 12 },
+            { quarter: 'Q3 2023', scheduled: 1050, completed: 903, duration: 13 },
+            { quarter: 'Q2 2023', scheduled: 920, completed: 782, duration: 15 }
+        ],
+        qualification: [
+            { qualification: 'Maintenance Planner', scheduled: 450, completed: 380 },
+            { qualification: 'Electrician', scheduled: 620, completed: 520 },
+            { qualification: 'Fitter and Turner', scheduled: 380, completed: 310 },
+            { qualification: 'Welder', scheduled: 420, completed: 350 },
+            { qualification: 'Instrument Mechanic', scheduled: 210, completed: 157 }
+        ],
+        center: [
+            { center: 'Technical Skills Academy', scheduled: 850, completed: 720 },
+            { center: 'Engineering Training Institute', scheduled: 650, completed: 540 },
+            { center: 'Vocational Assessment College', scheduled: 480, completed: 390 }
+        ]
+    };
+
+    // Initialize modals
+    const scheduleAssessmentModal = new bootstrap.Modal(document.getElementById('scheduleAssessmentModal'));
+    const csvUploadModal = new bootstrap.Modal(document.getElementById('csvUploadModal'));
+
+    // Initialize tab functionality
+    const tabElms = document.querySelectorAll('button[data-bs-toggle="tab"]');
+    tabElms.forEach(tabEl => {
+        tabEl.addEventListener('click', function(event) {
+            event.preventDefault();
+            const tab = new bootstrap.Tab(this);
+            tab.show();
+        });
+    });
+
+    // Initialize charts
+    function initializeCharts() {
+        // Quarterly Chart
+        const quarterlyCtx = document.getElementById('quarterlyChart').getContext('2d');
+        const quarterlyChart = new Chart(quarterlyCtx, {
+            type: 'bar',
+            data: {
+                labels: completionData.quarterly.map(item => item.quarter),
+                datasets: [
+                    {
+                        label: 'Scheduled',
+                        data: completionData.quarterly.map(item => item.scheduled),
+                        backgroundColor: 'rgba(60, 28, 83, 0.7)',
+                        borderColor: 'rgba(60, 28, 83, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Completed',
+                        data: completionData.quarterly.map(item => item.completed),
+                        backgroundColor: 'rgba(187, 134, 65, 0.7)',
+                        borderColor: 'rgba(187, 134, 65, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Qualification Chart
+        const qualificationCtx = document.getElementById('qualificationChart').getContext('2d');
+        const qualificationChart = new Chart(qualificationCtx, {
+            type: 'doughnut',
+            data: {
+                labels: completionData.qualification.map(item => item.qualification),
+                datasets: [{
+                    data: completionData.qualification.map(item => item.completed),
+                    backgroundColor: [
+                        'rgba(60, 28, 83, 0.7)',
+                        'rgba(187, 134, 65, 0.7)',
+                        'rgba(106, 90, 205, 0.7)',
+                        'rgba(169, 169, 169, 0.7)',
+                        'rgba(0, 128, 128, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(60, 28, 83, 1)',
+                        'rgba(187, 134, 65, 1)',
+                        'rgba(106, 90, 205, 1)',
+                        'rgba(169, 169, 169, 1)',
+                        'rgba(0, 128, 128, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right'
+                    }
+                }
+            }
+        });
+
+        // Center Chart
+        const centerCtx = document.getElementById('centerChart').getContext('2d');
+        const centerChart = new Chart(centerCtx, {
+            type: 'radar',
+            data: {
+                labels: completionData.center.map(item => item.center),
+                datasets: [{
+                    label: 'Completion Rate',
+                    data: completionData.center.map(item => Math.round((item.completed / item.scheduled) * 100)),
+                    backgroundColor: 'rgba(187, 134, 65, 0.2)',
+                    borderColor: 'rgba(187, 134, 65, 1)',
+                    pointBackgroundColor: 'rgba(187, 134, 65, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(187, 134, 65, 1)'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                }
+            }
+        });
+    }
+
+    // Populate completion data tables
+    function populateCompletionTables() {
+        // Quarterly data
+        const quarterlyTable = document.getElementById('quarterlyData');
+        quarterlyTable.innerHTML = completionData.quarterly.map(item => `
+            <tr>
+                <td>${item.quarter}</td>
+                <td>${item.scheduled.toLocaleString()}</td>
+                <td>${item.completed.toLocaleString()}</td>
+                <td>
+                    <div class="completion-progress">
+                        <div class="completion-progress-bar" style="width: ${Math.round((item.completed / item.scheduled) * 100)}%"></div>
+                    </div>
+                    <small>${Math.round((item.completed / item.scheduled) * 100)}%</small>
+                </td>
+                <td>${item.duration} days</td>
+            </tr>
+        `).join('');
+
+        // Qualification data
+        const qualificationTable = document.getElementById('qualificationData');
+        qualificationTable.innerHTML = completionData.qualification.map(item => `
+            <tr>
+                <td>${item.qualification}</td>
+                <td>${item.scheduled.toLocaleString()}</td>
+                <td>${item.completed.toLocaleString()}</td>
+                <td>
+                    <div class="completion-progress">
+                        <div class="completion-progress-bar" style="width: ${Math.round((item.completed / item.scheduled) * 100)}%"></div>
+                    </div>
+                    <small>${Math.round((item.completed / item.scheduled) * 100)}%</small>
+                </td>
+            </tr>
+        `).join('');
+
+        // Center data
+        const centerTable = document.getElementById('centerData');
+        centerTable.innerHTML = completionData.center.map(item => `
+            <tr>
+                <td>${item.center}</td>
+                <td>${item.scheduled.toLocaleString()}</td>
+                <td>${item.completed.toLocaleString()}</td>
+                <td>
+                    <div class="completion-progress">
+                        <div class="completion-progress-bar" style="width: ${Math.round((item.completed / item.scheduled) * 100)}%"></div>
+                    </div>
+                    <small>${Math.round((item.completed / item.scheduled) * 100)}%</small>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // Update calendar with scheduled assessments
+    function updateCalendar() {
+        // Clear existing events
+        document.querySelectorAll('.assessment-event').forEach(el => el.remove());
+
+        // Add new events
+        scheduledAssessments.forEach(assessment => {
+            const date = new Date(assessment.date);
+            const day = date.getDate();
+            
+            // Find the cell for this day
+            const dayCells = document.querySelectorAll('.calendar-day-header');
+            dayCells.forEach(cell => {
+                if (parseInt(cell.textContent) === day) {
+                    const dayCell = cell.closest('.calendar-day');
+                    const eventEl = document.createElement('div');
+                    eventEl.className = 'assessment-event';
+                    eventEl.textContent = `${assessment.qualification} - ${assessment.center} (${assessment.learners} learners)`;
+                    dayCell.appendChild(eventEl);
+                }
+            });
+        });
+    }
+
+    // Update stats cards
+    function updateStats() {
+        document.getElementById('scheduledBatchesCount').textContent = scheduledAssessments.length;
+        document.getElementById('learnersRegisteredCount').textContent = scheduledAssessments.reduce((sum, a) => sum + a.learners, 0).toLocaleString();
+    }
+
+    // Event listeners
+    document.getElementById('scheduleAssessmentBtn').addEventListener('click', function() {
+        scheduleAssessmentModal.show();
+    });
+
+    document.getElementById('confirmScheduleBtn').addEventListener('click', function() {
+        const center = document.getElementById('scheduleCenter').value;
+        const qualification = document.getElementById('scheduleQualification').value;
+        const date = document.getElementById('scheduleDate').value;
+        const learners = parseInt(document.getElementById('scheduleLearners').value);
+        const notes = document.getElementById('scheduleNotes').value;
+
+        if (center && qualification && date && learners) {
+            scheduledAssessments.push({
+                date: date,
+                center: center,
+                qualification: qualification,
+                learners: learners,
+                notes: notes
+            });
+
+            updateCalendar();
+            updateStats();
+            scheduleAssessmentModal.hide();
+            document.getElementById('scheduleAssessmentForm').reset();
+
+            // Show success message
+            alert('Assessment successfully scheduled!');
+        } else {
+            alert('Please fill in all required fields');
+        }
+    });
+
+    document.getElementById('createBatchBtn').addEventListener('click', function() {
+        const center = document.getElementById('centerSelect').value;
+        const qualification = document.getElementById('qualificationSelect').value;
+        const date = document.getElementById('assessmentDate').value;
+        const learnerList = document.getElementById('learnerList').value;
+
+        if (center && qualification && date && learnerList) {
+            const learnerIds = learnerList.split('\n').filter(id => id.trim() !== '');
+            
+            learnerBatches.push({
+                center: center,
+                qualification: qualification,
+                date: date,
+                learners: learnerIds.length,
+                learnerIds: learnerIds
+            });
+
+            // Update stats
+            const learnersCount = parseInt(document.getElementById('learnersRegisteredCount').textContent.replace(/,/g, '')) + learnerIds.length;
+            document.getElementById('learnersRegisteredCount').textContent = learnersCount.toLocaleString();
+
+            // Clear form
+            document.getElementById('learnerList').value = '';
+
+            // Show success message
+            alert(`Batch created successfully for ${learnerIds.length} learners!`);
+        } else {
+            alert('Please fill in all required fields');
+        }
+    });
+
+    document.getElementById('uploadCsvBtn').addEventListener('click', function() {
+        csvUploadModal.show();
+    });
+
+    document.getElementById('confirmUploadBtn').addEventListener('click', function() {
+        const fileInput = document.getElementById('csvFile');
+        if (fileInput.files.length > 0) {
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const contents = e.target.result;
+                document.getElementById('learnerList').value = contents.split('\n').join('\n');
+                csvUploadModal.hide();
+                document.getElementById('csvUploadForm').reset();
+            };
+
+            reader.readAsText(file);
+        } else {
+            alert('Please select a CSV file to upload');
+        }
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', function() {
+        // In a real app, this would generate and download a file
+        alert('Export functionality would generate a report file in a real application');
+    });
+
+    document.getElementById('newCycleBtn').addEventListener('click', function() {
+        // In a real app, this would initiate a new assessment cycle
+        alert('New assessment cycle would be created in a real application');
+    });
+
+    document.getElementById('printScheduleBtn').addEventListener('click', function() {
+        window.print();
+    });
+
+    // Calendar day click handler
+    document.querySelectorAll('.calendar-day').forEach(day => {
+        day.addEventListener('click', function() {
+            if (this.querySelector('.calendar-day-header')) {
+                const date = this.querySelector('.calendar-day-header').textContent;
+                const fullDate = `2024-06-${date.padStart(2, '0')}`;
+                
+                // Set the date in the schedule modal
+                document.getElementById('scheduleDate').value = fullDate;
+                document.getElementById('assessmentDate').value = fullDate;
+                
+                // Show the schedule modal
+                scheduleAssessmentModal.show();
+            }
+        });
+    });
+
+    // Initialize the dashboard
+    initializeCharts();
+    populateCompletionTables();
+    updateCalendar();
+    updateStats();
+});
+  </script>
+</body>
+</html>

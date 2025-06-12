@@ -1,0 +1,707 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internal Moderator (Marker) | CHIETA</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --dark-purple: #3c1c53;
+            --gold: #bb8641;
+            --light-gray: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-gray);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(to bottom, #f1f1f1, white, #e0e0e0, #f5f5f5, #3c1c53);
+            padding: 20px;
+            color: var(--dark-purple);
+            border-right: 1px solid var(--gold);
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar-header img {
+            width: 150px;
+            margin-bottom: 15px;
+        }
+
+        .sidebar-header h4 {
+            color: var(--dark-purple);
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 8px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-menu li a {
+            display: block;
+            padding: 10px 15px;
+            color: var(--dark-purple);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .sidebar-menu li:hover {
+            background-color: rgba(60, 28, 83, 0.1);
+        }
+
+        .sidebar-menu li.active {
+            background-color: var(--dark-purple);
+        }
+
+        .sidebar-menu li.active a {
+            color: white;
+        }
+
+        .sidebar-menu li i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 25px;
+            flex: 1;
+        }
+
+        .card {
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+            border: none;
+        }
+
+        .card-header {
+            background-color: var(--dark-purple);
+            color: white;
+            border-radius: 8px 8px 0 0 !important;
+            padding: 15px 20px;
+            font-weight: 600;
+        }
+
+        .card-header h5 {
+            margin-bottom: 0;
+        }
+
+        .card-header i {
+            margin-right: 10px;
+        }
+
+        .btn-purple {
+            background-color: var(--dark-purple);
+            color: white;
+            border: none;
+        }
+
+        .btn-purple:hover {
+            background-color: #2e1642;
+            color: white;
+        }
+
+        .btn-gold {
+            background-color: var(--gold);
+            color: white;
+            border: none;
+        }
+
+        .btn-gold:hover {
+            background-color: #a67338;
+            color: white;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-in-progress {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        .status-completed {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .filter-section {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .progress-container {
+            height: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            margin-bottom: 5px;
+        }
+
+        .progress-bar {
+            background-color: var(--dark-purple);
+            border-radius: 5px;
+        }
+
+        .moderation-guidelines {
+            background-color: #f8f5ff;
+            border-left: 4px solid var(--dark-purple);
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .sample-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            background-color: var(--gold);
+            color: white;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+
+        .audit-log {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .audit-log-item {
+            border-left: 3px solid var(--gold);
+            padding-left: 10px;
+            margin-bottom: 10px;
+        }
+
+        .audit-log-item .timestamp {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Navigation -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <img src="{% static 'images/logo_simplebbbbbbbbbbbbbb.png' %}" alt="CHIETA Logo">
+                <h4>Internal Moderator</h4>
+                <p class="text-muted">Implementation Marker</p>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="active">
+                    <a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-clipboard-check"></i> Moderation Queue</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-certificate"></i> Certification Review</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-history"></i> Audit Log</a>
+                </li>
+                <li>
+                    <a href="#"><i class="fas fa-cog"></i> Settings</a>
+                </li>
+                <a href="{% url 'logout' %}" class="fix">🚪 Log Out</a><br>
+            </ul>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Internal Moderation Dashboard</h2>
+                <div>
+                    <button class="btn btn-purple">
+                        <i class="fas fa-download"></i> Export Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Moderation Guidelines -->
+            <div class="moderation-guidelines">
+                <h5><i class="fas fa-info-circle"></i> Moderation Guidelines</h5>
+                <ol>
+                    <li>Sample 15-20% of assessments (or full batch for groups under 10 learners)</li>
+                    <li>Verify marking consistency and fairness</li>
+                    <li>Adjust marks where necessary with clear justification</li>
+                    <li>Forward moderated batches to QALA for final review</li>
+                </ol>
+            </div>
+
+            <!-- Filter Section -->
+            <div class="filter-section card">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-filter"></i> Filter Assessments</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="form-label">Batch ID</label>
+                            <select class="form-select">
+                                <option selected>All Batches</option>
+                                <option>BATCH-2024-015</option>
+                                <option>BATCH-2024-016</option>
+                                <option>BATCH-2024-017</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Qualification</label>
+                            <select class="form-select">
+                                <option selected>All Qualifications</option>
+                                <option>Maintenance Planner</option>
+                                <option>Electrician</option>
+                                <option>Fitter and Turner</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Status</label>
+                            <select class="form-select">
+                                <option selected>All Statuses</option>
+                                <option>Pending Moderation</option>
+                                <option>In Progress</option>
+                                <option>Forwarded to QALA</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Date Range</label>
+                            <input type="date" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <button class="btn btn-purple">
+                                <i class="fas fa-search"></i> Apply Filters
+                            </button>
+                            <button class="btn btn-outline-secondary">
+                                <i class="fas fa-sync-alt"></i> Reset
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-clipboard-list"></i> Moderation Progress</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Pending Moderation</span>
+                                <span>18</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: 25%"></div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-2 mt-3">
+                                <span>In Progress</span>
+                                <span>9</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: 35%"></div>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between mb-2 mt-3">
+                                <span>Forwarded to QALA</span>
+                                <span>24</span>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-bar" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-check-circle"></i> Mark Adjustments</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Total Adjusted</span>
+                                <span class="badge bg-warning text-dark">36</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Average Adjustment</span>
+                                <span>±7%</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-3">
+                                <span>Major Adjustments (>15%)</span>
+                                <span class="badge bg-danger">5</span>
+                            </div>
+                            <button class="btn btn-gold w-100 mt-2">
+                                <i class="fas fa-random"></i> Generate Sample
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5><i class="fas fa-history"></i> Recent Activity</h5>
+                        </div>
+                        <div class="card-body audit-log">
+                            <div class="audit-log-item">
+                                <strong>Batch BATCH-2024-016 forwarded to QALA</strong>
+                                <div class="timestamp">2 hours ago</div>
+                            </div>
+                            <div class="audit-log-item">
+                                <strong>Adjusted marks for 3 learners in BATCH-2024-015</strong>
+                                <div class="timestamp">5 hours ago</div>
+                            </div>
+                            <div class="audit-log-item">
+                                <strong>Sampled 20% of BATCH-2024-014 (4/20 learners)</strong>
+                                <div class="timestamp">1 day ago</div>
+                            </div>
+                            <div class="audit-log-item">
+                                <strong>Full moderation completed for BATCH-2024-013</strong>
+                                <div class="timestamp">2 days ago</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Assessments Table -->
+            <div class="card mt-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="fas fa-table"></i> Batches for Moderation</h5>
+                    <div>
+                        <span class="me-2">Showing 1-5 of 18</span>
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Batch ID</th>
+                                    <th>Qualification</th>
+                                    <th>Learners</th>
+                                    <th>Assessor</th>
+                                    <th>Status</th>
+                                    <th>Sampled</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>BATCH-2024-018</td>
+                                    <td>Maintenance Planner</td>
+                                    <td>12</td>
+                                    <td>John Smith</td>
+                                    <td><span class="status-badge status-pending">Pending</span></td>
+                                    <td><span class="sample-badge">0/12</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-purple">
+                                            <i class="fas fa-play"></i> Start
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>BATCH-2024-017</td>
+                                    <td>Electrician</td>
+                                    <td>8</td>
+                                    <td>Sarah Johnson</td>
+                                    <td><span class="status-badge status-in-progress">In Progress</span></td>
+                                    <td><span class="sample-badge">Full batch</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-purple">
+                                            <i class="fas fa-edit"></i> Continue
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>BATCH-2024-016</td>
+                                    <td>Fitter and Turner</td>
+                                    <td>15</td>
+                                    <td>Mike Brown</td>
+                                    <td><span class="status-badge status-completed">Completed</span></td>
+                                    <td><span class="sample-badge">3/15</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-gold">
+                                            <i class="fas fa-share"></i> Forward
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>BATCH-2024-015</td>
+                                    <td>Maintenance Planner</td>
+                                    <td>6</td>
+                                    <td>Jane Doe</td>
+                                    <td><span class="status-badge status-completed">Completed</span></td>
+                                    <td><span class="sample-badge">Full batch</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-success">
+                                            <i class="fas fa-check"></i> Approved
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>BATCH-2024-014</td>
+                                    <td>Electrician</td>
+                                    <td>20</td>
+                                    <td>David Wilson</td>
+                                    <td><span class="status-badge status-in-progress">In Progress</span></td>
+                                    <td><span class="sample-badge">4/20</span></td>
+                                    <td>
+                                        <button class="btn btn-sm btn-purple">
+                                            <i class="fas fa-edit"></i> Continue
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Moderation Modal (Hidden) -->
+            <div class="modal fade" id="moderationModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header bg-purple text-white">
+                            <h5 class="modal-title">Moderate Batch: BATCH-2024-017 (Electrician)</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Batch Info -->
+                            <div class="row mb-4">
+                                <div class="col-md-4">
+                                    <h6>Batch Information</h6>
+                                    <p><strong>Qualification:</strong> Occupational Certificate: Electrician</p>
+                                    <p><strong>SAQA ID:</strong> 101234</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Moderation Details</h6>
+                                    <p><strong>Batch Size:</strong> 8 learners</p>
+                                    <p><strong>Sampling:</strong> Full batch (100%)</p>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Assessor</h6>
+                                    <p><strong>Name:</strong> Sarah Johnson</p>
+                                    <p><strong>Date Marked:</strong> 2024-05-15</p>
+                                </div>
+                            </div>
+
+                            <!-- Learner Results Table -->
+                            <div class="card mb-4">
+                                <div class="card-header bg-light d-flex justify-content-between">
+                                    <h6 class="mb-0">Learner Results</h6>
+                                    <div>
+                                        <button class="btn btn-sm btn-gold">
+                                            <i class="fas fa-random"></i> Resample
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table table-sm">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Learner ID</th>
+                                                    <th>Name</th>
+                                                    <th>Original Mark</th>
+                                                    <th>Adjusted Mark</th>
+                                                    <th>Adjustment</th>
+                                                    <th>Feedback</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>LRN-021</td>
+                                                    <td>James Wilson</td>
+                                                    <td>72%</td>
+                                                    <td>
+                                                        <input type="number" class="form-control form-control-sm" value="72" min="0" max="100">
+                                                    </td>
+                                                    <td>±0%</td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm" placeholder="Add feedback...">
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-success">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>LRN-022</td>
+                                                    <td>Emma Davis</td>
+                                                    <td>68%</td>
+                                                    <td>
+                                                        <input type="number" class="form-control form-control-sm" value="75" min="0" max="100">
+                                                    </td>
+                                                    <td class="text-success">+7%</td>
+                                                    <td>
+                                                        <input type="text" class="form-control form-control-sm" value="Under-marked on practical component">
+                                                    </td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-success">
+                                                            <i class="fas fa-check"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                                <!-- More rows would appear here -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Moderation Feedback -->
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="card">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0">Moderation Feedback</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <textarea class="form-control" rows="4" placeholder="Enter overall feedback for this batch..."></textarea>
+                                            <div class="mt-3">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="consistentMarking">
+                                                    <label class="form-check-label" for="consistentMarking">
+                                                        Marking was consistent
+                                                    </label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="evidenceVerified">
+                                                    <label class="form-check-label" for="evidenceVerified">
+                                                        All evidence verified
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="card">
+                                        <div class="card-header bg-light">
+                                            <h6 class="mb-0">Forward to QALA</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="mb-3">
+                                                <label class="form-label">Priority</label>
+                                                <select class="form-select">
+                                                    <option>Normal</option>
+                                                    <option>High</option>
+                                                    <option>Urgent</option>
+                                                </select>
+                                            </div>
+                                            <button class="btn btn-success w-100">
+                                                <i class="fas fa-share"></i> Forward Batch
+                                            </button>
+                                            <button class="btn btn-outline-secondary w-100 mt-2">
+                                                <i class="fas fa-save"></i> Save Draft
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Open moderation modal when "Continue" or "Start" is clicked
+            const moderateButtons = document.querySelectorAll('.btn-purple');
+            moderateButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const modal = new bootstrap.Modal(document.getElementById('moderationModal'));
+                    modal.show();
+                });
+            });
+
+            // Sample generation functionality
+            document.querySelector('.btn-gold').addEventListener('click', function() {
+                alert('New sample generated: 3 learners selected from BATCH-2024-018');
+            });
+
+            // Mark adjustment calculation (example)
+            const markInputs = document.querySelectorAll('input[type="number"]');
+            markInputs.forEach(input => {
+                input.addEventListener('change', function() {
+                    const row = this.closest('tr');
+                    const originalMark = parseFloat(row.querySelector('td:nth-child(3)').textContent);
+                    const adjustedMark = parseFloat(this.value);
+                    const adjustmentCell = row.querySelector('td:nth-child(5)');
+                    
+                    const adjustment = adjustedMark - originalMark;
+                    adjustmentCell.textContent = adjustment >= 0 ? `+${adjustment}%` : `${adjustment}%`;
+                    adjustmentCell.className = adjustment >= 0 ? 'text-success' : 'text-danger';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

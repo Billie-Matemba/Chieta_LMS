@@ -1,0 +1,246 @@
+ :root {
+            --dark-purple: #3c1c53;
+            --gold: #bb8641;
+            --light-gray: #f8f9fa;
+        }
+
+        body {
+            margin: 0;
+            font-family: Georgia, 'Times New Roman', Times, serif;
+            background-color: var(--light-gray);
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: linear-gradient(to bottom, rgb(195, 193, 193), white, rgb(160, 160, 160), rgb(240, 239, 239), rgb(240, 239, 239), rgb(91, 60, 131));
+            padding: 20px;
+            color: rgb(81, 3, 102);
+            border-right: 1px solid #8f6620;
+            box-shadow: inset 0 -2px 3px rgba(75, 0, 130, 0.7);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            overflow-y: auto;
+        }
+
+        .sidebar ul {
+            padding-left: 0;
+            list-style-type: none;
+        }
+
+        .sidebar ul li {
+            transition: background-color 0.3s ease;
+            border-top: 1.5px solid #580658;
+            border-radius: 10px;
+            color: #580658;
+            padding: 8px 10px;
+            margin-bottom: 5px;
+        }
+
+        .sidebar ul li:hover {
+            background-color: #8f6620;
+            color: white;
+            cursor: pointer;
+        }
+
+        .sidebar ul li a {
+            color: inherit;
+            text-decoration: none;
+            display: block;
+        }
+
+        .sidebar ul li:hover a {
+            color: white;
+        }
+
+        .sidebar .graduate-icon {
+            border-radius: 20px;
+            height: 110px;
+            width: 105px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 20px;
+        }
+
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+            margin-left: 250px;
+        }
+
+        /* Card styling */
+        .card {
+            border-radius: 10px;
+            border-bottom: 2px solid var(--dark-purple);
+            border-right: 2px solid var(--dark-purple);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            background-color: white;
+        }
+
+        .card-header {
+            background: linear-gradient(to right, var(--dark-purple), #734e94, #552a74, var(--dark-purple));
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+        }
+
+        /* Button styling */
+        .btn-gold {
+            background: linear-gradient(to right, var(--gold), #8c6e0b, #b68f40, #7a5303, var(--gold));
+            color: white;
+            border: none;
+        }
+
+        .btn-purple {
+            background: linear-gradient(to right, var(--dark-purple), #734e94, #552a74, var(--dark-purple));
+            color: white;
+            border: none;
+        }
+
+        /* Status badges */
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-rejected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-adjusted {
+            background-color: #cce5ff;
+            color: #004085;
+        }
+
+        /* Mark adjustment styles */
+        .mark-adjustment {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mark-input {
+            width: 70px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .original-mark {
+            text-decoration: line-through;
+            color: #6c757d;
+        }
+
+        .adjusted-mark {
+            font-weight: bold;
+            color: var(--dark-purple);
+        }
+
+        /* Audit log styles */
+        .audit-log-item {
+            border-left: 3px solid var(--dark-purple);
+            padding-left: 15px;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .audit-log-item:before {
+            content: "";
+            position: absolute;
+            left: -3px;
+            top: 20px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--gold);
+        }
+
+        .audit-log-meta {
+            font-size: 0.85rem;
+            color: #6c757d;
+            display: flex;
+            gap: 15px;
+        }
+
+        /* Batch selector */
+        .batch-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                margin-left: 0;
+            }
+
+            .content {
+                margin-left: 0;
+            }
+        }
+
+        /* Feedback panel */
+        .feedback-panel {
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            padding: 15px;
+            background-color: white;
+        }
+
+        /* Results overview */
+        .results-summary {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            flex: 1;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin: 0 5px;
+            text-align: center;
+        }
+
+        .summary-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--dark-purple);
+        }
+
+        .summary-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }

@@ -1,0 +1,678 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moderator Dashboard | CHIETA</title>
+    <link rel="stylesheet" href="{% static 'css/MD.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="graduate-icon">
+                <img src="{% static 'images/logo_simplebbbbbbbbbbbbbb.png' %}" alt="CHIETA Logo" style="width: 130px;">
+            </div>
+            <br><br>
+            <ul>
+                <li class="nav-item active">
+                    <a href="#" class="nav-item"><i class="fa fa-tachometer-alt"></i> Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-item"><i class="fa fa-file-alt"></i> Assessments</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-item"><i class="fa fa-check-double"></i> Moderation Queue</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-item"><i class="fa fa-clipboard-check"></i> QCTO Compliance</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-item"><i class="fa fa-comment"></i> Feedback</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-item"><i class="fa fa-cog"></i> Settings</a>
+                </li>
+                <a href="{% url 'logout' %}" class="fix">🚪 Log Out</a><br>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Page Header -->
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-user-shield"></i> Moderator Dashboard</h2>
+                <div class="btn-group">
+                    <button class="btn btn-purple">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="btn btn-gold">
+                        <i class="fas fa-question-circle"></i> Help
+                    </button>
+                </div>
+            </div>
+
+            <!-- Metrics Overview -->
+            <div class="row mb-4">
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="metric-value">12</div>
+                        <div class="metric-label">Pending Moderation</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="metric-value">24</div>
+                        <div class="metric-label">Completed Today</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="metric-value">92%</div>
+                        <div class="metric-label">Compliance Rate</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="metric-value">3.2</div>
+                        <div class="metric-label">Avg. Feedback Rounds</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Tabs -->
+            <ul class="nav nav-tabs mb-4" id="moderatorTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="queue-tab" data-bs-toggle="tab" data-bs-target="#queue" type="button" role="tab">
+                        <i class="fas fa-tasks"></i> Moderation Queue
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="checklist-tab" data-bs-toggle="tab" data-bs-target="#checklist" type="button" role="tab">
+                        <i class="fas fa-clipboard-list"></i> QCTO Checklist
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="feedback-tab" data-bs-toggle="tab" data-bs-target="#feedback" type="button" role="tab">
+                        <i class="fas fa-comments"></i> Recent Feedback
+                    </button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="moderatorTabsContent">
+                <!-- Moderation Queue Tab -->
+                <div class="tab-pane fade show active" id="queue" role="tabpanel">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0"><i class="fas fa-list-ol"></i> Assessments Requiring Moderation</h5>
+                                <div class="input-group" style="width: 300px;">
+                                    <input type="text" class="form-control" placeholder="Search assessments...">
+                                    <button class="btn btn-purple" type="button">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Assessment ID</th>
+                                            <th>Title</th>
+                                            <th>Assessor</th>
+                                            <th>Submitted</th>
+                                            <th>Duplication %</th>
+                                            <th>Status</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>ASMT-2023-045</td>
+                                            <td>Electrical Principles L3</td>
+                                            <td>John Smith</td>
+                                            <td>2023-05-15</td>
+                                            <td>18%</td>
+                                            <td><span class="status-badge status-pending">Pending</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-gold me-2">Moderate</button>
+                                                <button class="btn btn-sm btn-outline-secondary">Details</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ASMT-2023-046</td>
+                                            <td>Mechanical Engineering L4</td>
+                                            <td>Sarah Johnson</td>
+                                            <td>2023-05-16</td>
+                                            <td>27%</td>
+                                            <td><span class="status-badge status-rejected">Flagged</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-gold me-2">Moderate</button>
+                                                <button class="btn btn-sm btn-outline-secondary">Details</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ASMT-2023-047</td>
+                                            <td>Automotive Repair L2</td>
+                                            <td>Mike Brown</td>
+                                            <td>2023-05-17</td>
+                                            <td>12%</td>
+                                            <td><span class="status-badge status-pending">Pending</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-gold me-2">Moderate</button>
+                                                <button class="btn btn-sm btn-outline-secondary">Details</button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>ASMT-2023-048</td>
+                                            <td>Welding Techniques L3</td>
+                                            <td>David Wilson</td>
+                                            <td>2023-05-18</td>
+                                            <td>9%</td>
+                                            <td><span class="status-badge status-approved">Approved</span></td>
+                                            <td>
+                                                <button class="btn btn-sm btn-outline-success me-2">View</button>
+                                                <button class="btn btn-sm btn-outline-secondary">Details</button>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <nav aria-label="Assessment pagination">
+                                <ul class="pagination justify-content-center mt-3">
+                                    <li class="page-item disabled">
+                                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                                    </li>
+                                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                    <li class="page-item">
+                                        <a class="page-link" href="#">Next</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- moderation checklist -->
+                <div class="tab-pane fade" id="checklist" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-clipboard-check"></i> Moderation Checklist</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="checklist-item completed">
+                                        <input type="checkbox" checked>
+                                        <span>Assessment aligns with unit standard (max 25% duplication)</span>
+                                    </div>
+                                    <div class="checklist-item completed">
+                                        <input type="checkbox" checked>
+                                        <span>Assessment instrument covers all critical outcomes</span>
+                                    </div>
+                                    <div class="checklist-item">
+                                        <input type="checkbox">
+                                        <span>Language and terminology appropriate for NQF level</span>
+                                    </div>
+                                    <div class="checklist-item">
+                                        <input type="checkbox">
+                                        <span>Clear instructions provided for candidates</span>
+                                    </div>
+                                    <div class="checklist-item">
+                                        <input type="checkbox">
+                                        <span>Assessment criteria clearly defined</span>
+                                    </div>
+                                    <div class="checklist-item">
+                                        <input type="checkbox">
+                                        <span>Required evidence specified</span>
+                                    </div>
+                                    <div class="checklist-item">
+                                        <input type="checkbox">
+                                        <span>Assessment methods appropriate for outcomes</span>
+                                    </div>
+                                    <div class="checklist-item">
+                                        <input type="checkbox">
+                                        <span>Assessment instrument is fair and unbiased</span>
+                                    </div>
+                                    <div class="checklist-item">
+                                        <input type="checkbox">
+                                        <span>Assessment allows for RPL opportunities</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Compliance Statistics</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="text-center mb-4">
+                                        <div class="mb-2">
+                                            <canvas id="complianceChart" height="200"></canvas>
+                                        </div>
+                                        <h5>Overall Compliance: 78%</h5>
+                                    </div>
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: 92%">
+                                            Duplication Check (92%)
+                                        </div>
+                                    </div>
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar bg-info" role="progressbar" style="width: 85%">
+                                            Outcome Coverage (85%)
+                                        </div>
+                                    </div>
+                                    <div class="progress mb-3">
+                                        <div class="progress-bar bg-warning" role="progressbar" style="width: 65%">
+                                            Language Appropriateness (65%)
+                                        </div>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-danger" role="progressbar" style="width: 70%">
+                                            Evidence Specification (70%)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Feedback Tab -->
+                <div class="tab-pane fade" id="feedback" role="tabpanel">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-comment-dots"></i> Recent Feedback to Assessors</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="feedback-item">
+                                        <h6>Assessment: Electrical Principles L3</h6>
+                                        <p>The duplication percentage exceeds the 25% threshold (currently at 27%). Please revise questions 3, 7, and 12 to reduce overlap with previous assessments.</p>
+                                        <div class="feedback-meta">
+                                            <span>To: John Smith</span> | 
+                                            <span>Date: 2023-05-15</span> | 
+                                            <span>Status: <span class="status-badge status-pending">Pending Response</span></span>
+                                        </div>
+                                    </div>
+                                    <div class="feedback-item">
+                                        <h6>Assessment: Mechanical Engineering L4</h6>
+                                        <p>Critical outcome 4.3 is not adequately covered in the practical assessment. Please add at least two additional tasks that demonstrate this competency.</p>
+                                        <div class="feedback-meta">
+                                            <span>To: Sarah Johnson</span> | 
+                                            <span>Date: 2023-05-14</span> | 
+                                            <span>Status: <span class="status-badge status-reviewed">Revised</span></span>
+                                        </div>
+                                    </div>
+                                    <div class="feedback-item">
+                                        <h6>Assessment: Automotive Repair L2</h6>
+                                        <p>The language used in questions 5 and 8 may be too complex for NQF Level 2. Please simplify the wording and provide clearer instructions.</p>
+                                        <div class="feedback-meta">
+                                            <span>To: Mike Brown</span> | 
+                                            <span>Date: 2023-05-12</span> | 
+                                            <span>Status: <span class="status-badge status-approved">Completed</span></span>
+                                        </div>
+                                    </div>
+                                    <div class="text-center mt-3">
+                                        <button class="btn btn-purple">
+                                            <i class="fas fa-plus"></i> Add New Feedback
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card mb-4">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-exchange-alt"></i> Feedback Workflow</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="progress-tracker">
+                                        <div class="progress-line">
+                                            <div class="progress-fill" style="width: 75%;"></div>
+                                        </div>
+                                        <div class="progress-step">
+                                            <div class="step-circle completed">1</div>
+                                            <div>Review</div>
+                                        </div>
+                                        <div class="progress-step">
+                                            <div class="step-circle completed">2</div>
+                                            <div>Feedback</div>
+                                        </div>
+                                        <div class="progress-step">
+                                            <div class="step-circle active">3</div>
+                                            <div>Revision</div>
+                                        </div>
+                                        <div class="progress-step">
+                                            <div class="step-circle">4</div>
+                                            <div>Approval</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-bullhorn"></i> Quick Actions</h5>
+                                </div>
+                                <div class="card-body">
+                                    <button class="btn btn-gold w-100 mb-2">
+                                        <i class="fas fa-file-export"></i> Export Compliance Report
+                                    </button>
+                                    <button class="btn btn-purple w-100 mb-2">
+                                        <i class="fas fa-envelope"></i> Send Reminders
+                                    </button>
+                                    <button class="btn btn-outline-secondary w-100">
+                                        <i class="fas fa-question-circle"></i> Request QCTO Guidance
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Initialize charts
+            const ctx = document.getElementById('complianceChart').getContext('2d');
+            const complianceChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Compliant', 'Minor Issues', 'Major Issues', 'Non-Compliant'],
+                    datasets: [{
+                        data: [45, 25, 20, 10],
+                        backgroundColor: [
+                            '#28a745',
+                            '#17a2b8',
+                            '#ffc107',
+                            '#dc3545'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Tab functionality
+            const tabElms = document.querySelectorAll('button[data-bs-toggle="tab"]');
+            tabElms.forEach(tabEl => {
+                tabEl.addEventListener('shown.bs.tab', function (event) {
+                    if (event.target.id === 'checklist-tab') {
+                        complianceChart.update();
+                    }
+                });
+            });
+
+            // Checklist item interaction
+            const checklistItems = document.querySelectorAll('.checklist-item input[type="checkbox"]');
+            checklistItems.forEach(item => {
+                item.addEventListener('change', function() {
+                    const parent = this.closest('.checklist-item');
+                    if (this.checked) {
+                        parent.classList.add('completed');
+                    } else {
+                        parent.classList.remove('completed');
+                    }
+                });
+            });
+            document.addEventListener('DOMContentLoaded', function () {
+    // Initialize charts
+    const initializeCharts = () => {
+        const ctx = document.getElementById('complianceChart')?.getContext('2d');
+        if (ctx) {
+            const complianceChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Compliant', 'Minor Issues', 'Major Issues', 'Non-Compliant'],
+                    datasets: [{
+                        data: [45, 25, 20, 10],
+                        backgroundColor: [
+                            '#28a745',
+                            '#17a2b8',
+                            '#ffc107',
+                            '#dc3545'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+            return complianceChart;
+        }
+        return null;
+    };
+
+    let complianceChart = initializeCharts();
+
+    // Tab functionality
+    const tabElms = document.querySelectorAll('button[data-bs-toggle="tab"]');
+    tabElms.forEach(tabEl => {
+        tabEl.addEventListener('shown.bs.tab', function (event) {
+            if (event.target.id === 'checklist-tab' && complianceChart) {
+                complianceChart.update();
+            }
+        });
+    });
+
+    // Checklist item interaction
+    const checklistItems = document.querySelectorAll('.checklist-item input[type="checkbox"]');
+    checklistItems.forEach(item => {
+        item.addEventListener('change', function() {
+            const parent = this.closest('.checklist-item');
+            if (this.checked) {
+                parent.classList.add('completed');
+            } else {
+                parent.classList.remove('completed');
+            }
+        });
+    });
+
+    // Sidebar navigation active state
+    const navLinks = document.querySelectorAll('.sidebar .nav-item');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function() {
+            navLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+
+    // Moderation queue actions
+    const moderateButtons = document.querySelectorAll('.btn-gold:not(.btn-review)');
+    moderateButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const row = this.closest('tr');
+            const assessmentId = row.querySelector('td:first-child').textContent;
+            alert(`Opening moderation panel for assessment: ${assessmentId}`);
+            // In a real implementation, this would open a moderation interface
+        });
+    });
+
+    // Details buttons in moderation queue
+    const detailsButtons = document.querySelectorAll('.btn-outline-secondary:not(.btn-download)');
+    detailsButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const row = this.closest('tr');
+            const assessmentId = row.querySelector('td:first-child').textContent;
+            alert(`Showing details for assessment: ${assessmentId}`);
+            // In a real implementation, this would show a modal with detailed info
+        });
+    });
+
+    // Refresh button functionality
+    const refreshButton = document.querySelector('.btn-purple i.fa-sync-alt')?.closest('button');
+    if (refreshButton) {
+        refreshButton.addEventListener('click', function() {
+            location.reload();
+        });
+    }
+
+    // Help button functionality
+    const helpButton = document.querySelector('.btn-gold i.fa-question-circle')?.closest('button');
+    if (helpButton) {
+        helpButton.addEventListener('click', function() {
+            alert('Opening help documentation...');
+            // In a real implementation, this would open a help modal or page
+        });
+    }
+
+    // Search functionality in moderation queue
+    const searchInput = document.querySelector('.card-header input[type="text"]');
+    const searchButton = document.querySelector('.card-header .btn-purple');
+    if (searchInput && searchButton) {
+        searchButton.addEventListener('click', function() {
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm) {
+                alert(`Searching for: ${searchTerm}`);
+                // In a real implementation, this would filter the table
+            }
+        });
+
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchButton.click();
+            }
+        });
+    }
+
+    // Pagination functionality
+    const paginationLinks = document.querySelectorAll('.pagination .page-link:not(.disabled)');
+    paginationLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const pageText = this.textContent.trim();
+            alert(`Loading page: ${pageText}`);
+            // In a real implementation, this would load the requested page
+        });
+    });
+
+    // Quick action buttons
+    const quickActions = {
+        '.btn-gold i.fa-file-export': 'Exporting compliance report...',
+        '.btn-purple i.fa-envelope': 'Sending reminders to assessors...',
+        '.btn-outline-secondary i.fa-question-circle': 'Requesting QCTO guidance...'
+    };
+
+    Object.entries(quickActions).forEach(([selector, message]) => {
+        const button = document.querySelector(selector)?.closest('button');
+        if (button) {
+            button.addEventListener('click', function() {
+                alert(message);
+                // In a real implementation, this would perform the action
+            });
+        }
+    });
+
+    // Add new feedback button
+    const addFeedbackButton = document.querySelector('#feedback .btn-purple i.fa-plus')?.closest('button');
+    if (addFeedbackButton) {
+        addFeedbackButton.addEventListener('click', function() {
+            alert('Opening feedback form...');
+            // In a real implementation, this would open a feedback form modal
+        });
+    }
+
+    // Progress tracker visualization
+    const updateProgressTracker = () => {
+        const progressFill = document.querySelector('.progress-fill');
+        if (progressFill) {
+            // Simulate progress updates
+            let width = 0;
+            const interval = setInterval(() => {
+                width += 5;
+                progressFill.style.width = `${width}%`;
+                if (width >= 75) clearInterval(interval);
+            }, 100);
+        }
+    };
+    updateProgressTracker();
+
+    // Responsive adjustments
+    const handleResize = () => {
+        if (window.innerWidth < 768) {
+            document.querySelector('.sidebar')?.classList.add('collapsed');
+        } else {
+            document.querySelector('.sidebar')?.classList.remove('collapsed');
+        }
+    };
+    window.addEventListener('resize', handleResize);
+    handleResize();
+
+    // Toast notifications for actions
+    const showToast = (message, type = 'success') => {
+        const toastContainer = document.createElement('div');
+        toastContainer.className = `toast-container position-fixed bottom-0 end-0 p-3`;
+        
+        const toastEl = document.createElement('div');
+        toastEl.className = `toast show align-items-center text-white bg-${type}`;
+        toastEl.setAttribute('role', 'alert');
+        toastEl.setAttribute('aria-live', 'assertive');
+        toastEl.setAttribute('aria-atomic', 'true');
+        
+        const toastBody = document.createElement('div');
+        toastBody.className = 'd-flex';
+        
+        const toastMessage = document.createElement('div');
+        toastMessage.className = 'toast-body';
+        toastMessage.textContent = message;
+        
+        const closeButton = document.createElement('button');
+        closeButton.className = 'btn-close btn-close-white me-2 m-auto';
+        closeButton.setAttribute('type', 'button');
+        closeButton.setAttribute('data-bs-dismiss', 'toast');
+        closeButton.setAttribute('aria-label', 'Close');
+        
+        toastBody.appendChild(toastMessage);
+        toastBody.appendChild(closeButton);
+        toastEl.appendChild(toastBody);
+        toastContainer.appendChild(toastEl);
+        
+        document.body.appendChild(toastContainer);
+        
+        closeButton.addEventListener('click', () => {
+            toastContainer.remove();
+        });
+        
+        setTimeout(() => {
+            toastContainer.remove();
+        }, 5000);
+    };
+
+    // Example usage of toast notification
+    // showToast('Moderation completed successfully!', 'success');
+});
+        });
+    </script>
+</body>
+</html>

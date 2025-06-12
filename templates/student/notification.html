@@ -1,0 +1,196 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help & Support</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* Add to existing styles */
+        .support-container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+
+        .help-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .faq-item {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+
+        .faq-question {
+            color: #580658;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .contact-form {
+            display: grid;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .form-input {
+            padding: 12px;
+            border: 2px solid #580658;
+            border-radius: 8px;
+            width: 100%;
+        }
+
+        .support-card {
+            background: linear-gradient(to right, #f8f8f8, white);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s ease;
+        }
+
+        .support-card:hover {
+            transform: translateX(10px);
+        }
+
+        .support-icon {
+            font-size: 24px;
+            color: #580658;
+            min-width: 40px;
+        }
+
+        .live-chat-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #580658;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(88, 6, 88, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar (same as previous pages) -->
+        <div class="sidebar">
+            <!-- ... existing sidebar content ... -->
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="support-container">
+                <h1 style="color: #580658; margin-bottom: 25px;">Help & Support</h1>
+                
+             
+
+                <!-- FAQ Section -->
+            
+                <!-- Contact Support -->
+                <div class="help-section">
+                    <h2>Contact Support</h2>
+                    <form class="contact-form">
+                        <input type="text" class="form-input" placeholder="Your Name">
+                        <input type="email" class="form-input" placeholder="Your Email">
+                        <input type="text" class="form-input" placeholder="Subject">
+                        <textarea class="form-input" rows="5" placeholder="Your Message"></textarea>
+                        <button type="submit" class="gradient-button">Send Message</button>
+                    </form>
+                </div>
+
+                <!-- Support Options -->
+                <div class="help-section">
+                    <h2>Support Options</h2>
+                    <div class="support-card">
+                        <i class="fas fa-phone support-icon"></i>
+                        <div>
+                            <h3>24/7 Phone Support</h3>
+                            <p>Call us at: +1 (800) 123-4567</p>
+                        </div>
+                    </div>
+                    
+                    <div class="support-card">
+                        <i class="fas fa-envelope support-icon"></i>
+                        <div>
+                            <h3>Email Support</h3>
+                            <p>Email us at: support@learningplatform.com</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resources -->
+                <div class="help-section">
+                    <h2>Resources</h2>
+                    <div class="paper-grid">
+                        <div class="paper-card">
+                            <h3>User Guide</h3>
+                            <div class="paper-actions">
+                                <button class="download-btn">
+                                    <i class="fas fa-download"></i>
+                                    Download PDF
+                                </button>
+                            </div>
+                        </div>
+                        <!-- Add more resources -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Chat Button -->
+            <div class="live-chat-btn" onclick="openChat()">
+                <i class="fas fa-comments"></i> Live Chat
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // FAQ Toggle Functionality
+        function toggleFAQ(element) {
+            const answer = element.nextElementSibling;
+            const icon = element.querySelector('i');
+            answer.style.maxHeight = answer.style.maxHeight ? null : answer.scrollHeight + "px";
+            icon.style.transform = answer.style.maxHeight ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        // Form Submission
+        document.querySelector('form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Your message has been sent successfully!');
+            this.reset();
+        });
+
+        // Live Chat Simulation
+        function openChat() {
+            alert('Connecting you to a support agent...');
+            // Implement actual chat functionality here
+        }
+
+        // Search Functionality
+        document.querySelector('.topbar input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            // Implement search logic here
+        });
+    </script>
+</body>
+</html>

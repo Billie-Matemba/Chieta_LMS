@@ -1,0 +1,286 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Databank | CHIETA</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <style>
+    .folder-toggle {
+      cursor: pointer;
+      font-weight: bold;
+      color: #5e3b00;
+    }
+
+    .question-box {
+      margin-left: 20px;
+      margin-top: 10px;
+    }
+
+    .content {
+      background-image: url("{% static 'images/Frame.png' %}");
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    .btn-purple {
+      background-color: #800080;
+      color: white;
+    }
+
+    .btn-purple:hover {
+      background-color: #6a006a;
+      color: white;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      flex: 1;
+      min-width: 220px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="dashboard-container">
+     <div class="sidebar">Add commentMore actions
+    <div class="graduate-icon">
+      <img src="{% static 'images/logo_simplebbbbbbbbbbbbbb.png' %}" alt="CHIETA Logo" style="width: 130px;">
+    </div><br><br>
+    <ul class="sidebar-nav">
+      <li><a href="{% url 'admin_dashboard' %}" class="nav-item"><i class="fa fa-home"></i>Dashboard</a></li>
+      <li><a href="{% url 'centre' %}" class="nav-item"><i class="fa fa-building"></i> Assessment Centres</a></li>
+      <li><a href="{% url 'users' %}" class="nav-item"><i class="fa fa-users"></i> User Management</a></li>
+      <li><a href="{% url 'databank' %}" class="nav-item"><i class="fa fa-database"></i> Databank</a></li>
+       <li><a href="notifications" class="nav-item"><i class="fa fa-bell"></i> Notifications</a></li>Add commentMore actions
+      <li><a href="Help.html" class="nav-item"><i class="fa fa-question-circle"></i> Help & Support</a></li>
+              <div class="sidebar-footer">
+                <img src="{% static 'images/rb_2149331949.png' %}" alt="Footer Image" class="footer-img">Add commentMore actions
+                <button class="btn btn-gold fixy mb-2 w-100">
+                    <i class="fas fa-cog"></i>
+                    <span class="btn-text">Settings</span>
+                </button>
+                <button class="btn btn-purple fix w-100">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span class="btn-text">Log Out</span>
+                </button>
+            </div>
+  </div>
+
+  <div class="content">
+          <!-- Top Bar -->
+            <div class="topbar">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="search" placeholder="Search...">
+                </div>
+                
+            </div>
+    <div class="welcome-container">
+      <div class="welcome-box">
+        <h2>Databank</h2>
+        <p class="date">EISA Tools Repository</p>
+        <button class="gradient-button">Innovating for Impact</button>
+         <img src="{% static 'images/rb_2148892786.png' %}" alt="Welcome Illustration" class="welcome-image" >
+      </div>
+      
+    </div>
+     
+
+      <button class="btn btn-purple mb-3" data-bs-toggle="modal" data-bs-target="#addQuestionModal">+ Add
+        Question</button>
+
+        <div class="card mb-4">
+          
+      <div class="accordion" id="qualificationAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+              Qualification: Maintenance Planner
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#qualificationAccordion">
+            <div class="accordion-body">
+              <div class="question-box">
+                <p><strong>Q1:</strong> Explain the role of a maintenance planner. <em>(10 marks)</em></p>
+                <p><strong>Q2:</strong> Describe the workflow of preventative maintenance. <em>(15 marks)</em></p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseTwo">
+              Qualification: Quality Controller
+            </button>
+          </h2>
+          <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#qualificationAccordion">
+            <div class="accordion-body">
+              <div class="question-box">
+                <p><strong>Q1:</strong> What are the key safety regulations in chemical processing? <em>(20 marks)</em>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+                <div class="accordion-item">
+          <h2 class="accordion-header" id="headingThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+              data-bs-target="#collapseThree">
+              Qualification: Chemical Plant Controller
+            </button>
+          </h2>
+          <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#qualificationAccordion">
+            <div class="accordion-body">
+              <div class="question-box">
+                <p><strong>Q1:</strong> What are the key safety regulations in chemical processing? <em>(20 marks)</em>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="addQuestionModal" tabindex="-1" aria-labelledby="addQuestionModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form onsubmit="addNewQuestion(event)">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addQuestionModalLabel">Add New Question</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="qualificationSelect" class="form-label">Qualification</label>
+            <select class="form-select" id="qualificationSelect">
+              <option>Maintenance Planner</option>
+              <option>Quality Controller</option>
+              <option>Chemical Plant Controller</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="questionType" class="form-label">Question Type</label>
+            <select class="form-select" id="questionType">
+              <option>Long Question</option>
+              <option>Short Question</option>
+              <option>Multiple Choice</option>
+              <option>Matching Exam</option>
+              <option>True/False</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="questionText" class="form-label" id="autoQuestionLabel">Question</label>
+            <textarea class="form-control" id="questionText" rows="3"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="marks" class="form-label">Marks</label>
+            <input type="number" class="form-control" id="marks">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-purple">Add Question</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  const qualificationMap = {
+    "Maintenance Planner": "collapseOne",
+    "Quality Controller": "collapseTwo",
+    "Chemical Plant Controller": "collapseThree"
+  };
+
+  const addQuestionModal = document.getElementById('addQuestionModal');
+
+  addQuestionModal.addEventListener('show.bs.modal', function () {
+    const qualification = document.getElementById("qualificationSelect").value;
+    const collapseId = qualificationMap[qualification];
+    const existingCount = document.querySelectorAll(`#${collapseId} .question-box p`).length + 1;
+    document.getElementById("autoQuestionLabel").textContent = `Question ${existingCount}`;
+  });
+
+  document.getElementById("qualificationSelect").addEventListener("change", () => {
+    const qualification = document.getElementById("qualificationSelect").value;
+    const collapseId = qualificationMap[qualification];
+    const existingCount = document.querySelectorAll(`#${collapseId} .question-box p`).length + 1;
+    document.getElementById("autoQuestionLabel").textContent = `Question ${existingCount}`;
+  });
+
+  function addNewQuestion(event) {
+    event.preventDefault();
+
+    const qualification = document.getElementById("qualificationSelect").value;
+    const questionText = document.getElementById("questionText").value.trim();
+    const questionType = document.getElementById("questionType").value;
+    const marks = document.getElementById("marks").value.trim();
+
+    if (!questionText || !marks) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    const collapseId = qualificationMap[qualification];
+    const questionBox = document.querySelector(`#${collapseId} .question-box`);
+    const currentCount = questionBox.querySelectorAll("p").length + 1;
+
+    const newP = document.createElement("p");
+    newP.innerHTML = `
+      <strong class="question-number">Q${currentCount}:</strong> ${questionText} 
+      <em>(${marks} marks, ${questionType})</em>
+      <button class="btn btn-sm btn-danger ms-2" onclick="deleteQuestion(this)">Delete</button>
+    `;
+    questionBox.appendChild(newP);
+
+    // Reset form fields
+    document.getElementById("questionText").value = "";
+    document.getElementById("marks").value = "";
+    document.getElementById("questionType").value = "Long Question";
+
+    // Hide modal
+    const modal = bootstrap.Modal.getInstance(addQuestionModal);
+    modal.hide();
+  }
+
+  function deleteQuestion(button) {
+    if (!confirm("Are you sure you want to delete this question?")) return;
+
+    const p = button.closest("p");
+    const questionBox = p.parentElement;
+    p.remove();
+
+    // Renumber questions
+    const questions = questionBox.querySelectorAll("p");
+    questions.forEach((question, index) => {
+      const numberEl = question.querySelector(".question-number");
+      if (numberEl) numberEl.textContent = `Q${index + 1}:`;
+    });
+  }
+</script>
+
+
+
+</body>
+
+</html>

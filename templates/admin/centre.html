@@ -1,0 +1,249 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assessment Centres | CHIETA</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+  <style>
+    .folder-toggle { cursor: pointer; font-weight: bold; color: #5e3b00; }
+    .question-box { margin-left: 20px; margin-top: 10px; }
+    .content {
+      background-color: #efeaea;
+      background-image: url("{% static 'images/Frame.png' %}");
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      flex: 1;
+      min-width: 220px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+  <div class="sidebar">
+    <div class="graduate-icon">
+      <img src="{% static 'images/logo_simplebbbbbbbbbbbbbb.png' %}" alt="CHIETA Logo" style="width: 130px;">
+    </div><br><br>
+     <ul class="sidebar-nav">
+      <li><a href="{% url 'admin_dashboard' %}" class="nav-item"><i class="fa fa-home"></i>Dashboard</a></li>
+      <li><a href="{% url 'centre' %}" class="nav-item"><i class="fa fa-building"></i> Assessment Centres</a></li>
+      <li><a href="{% url 'users' %}" class="nav-item"><i class="fa fa-users"></i> User Management</a></li>
+      <li><a href="{% url 'databank' %}" class="nav-item"><i class="fa fa-database"></i> Databank</a></li>
+      <!-- <li>🔔 Notifications</li>
+      <li>🛠️ Help & Support</li><br><br><br><br>
+      <button class="fixy">⚙️ Settings</button>
+      <a href="{% url 'logout' %}" class="fix">🚪 Log Out</a><br>
+    </ul>
+    <img src="{% static 'images/rb_2149331949.png' %}" alt="Sidebar Art" width="199px"> -->
+    <li><a href="notifications" class="nav-item"><i class="fa fa-bell"></i> Notifications</a></li>Add commentMore actions
+      <li><a href="Help.html" class="nav-item"><i class="fa fa-question-circle"></i> Help & Support</a></li>
+              <div class="sidebar-footer">
+                <img src="{% static 'images/rb_2149331949.png' %}" alt="Footer Image" class="footer-img">
+                <button class="btn btn-gold fixy mb-2 w-100">
+                    <i class="fas fa-cog"></i>
+                    <span class="btn-text">Settings</span>
+                <form action="{% url 'logout' %}" method="post" class="d-inline">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-purple fix w-100">
+        <i class="fas fa-sign-out-alt"></i>
+        <span class="btn-text">Log Out</span>
+    </button>
+</form>
+            </div>
+  </div>
+
+    <div class="content">Add commentMore actions
+          <!-- Top Bar -->
+            <div class="topbar">
+                <div class="search-container">
+                    <i class="fas fa-search"></i>
+                    <input type="search" placeholder="Search...">
+                </div>
+                
+            </div>
+    <div class="welcome-container">Add commentMore actions
+      <div class="welcome-box">
+        <h2>Assessment Centres</h2>
+        <p class="date">Overview of Assessment Centres</p>
+        <button class="gradient-button">Innovating for Impact</button>
+         <img src="{% static 'images/rb_2148892786.png' %}" alt="Welcome Illustration" class="welcome-image" >
+      </div>
+      
+    </div>
+
+       <button class="gradient-button mb-3" data-bs-toggle="modal" data-bs-target="#addCentreModal">+ Add Assessment Centre</button>
+
+      <div class="card">
+              <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Responsible Person</th>
+            <th>Qualification Assigned</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="centreTableBody">
+        </tbody>
+      </table>
+      </div>
+
+
+
+      <!-- Add Modal -->
+      <div class="modal fade" id="addCentreModal" tabindex="-1" aria-labelledby="addCentreModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="addCentreModalLabel">Add Assessment Centre</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="addCentreForm">
+                <div class="mb-3">
+                  <label class="form-label">Centre Name</label>
+                  <input type="text" class="form-control" id="centreName">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Location</label>
+                  <input type="text" class="form-control" id="centreLocation">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" id="centreEmail">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Phone</label>
+                  <input type="tel" class="form-control" id="centrePhone">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Responsible Person</label>
+                  <input type="text" class="form-control" id="responsiblePerson">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Assign Qualification</label>
+                  <select class="form-select" id="qualificationAssigned">
+                    <option>Maintenance Planner</option>
+                    <option>Quality Controller</option>
+                    <option>Chemical Plant Operator</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-success">Add Centre</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Edit Modal -->
+      <div class="modal fade" id="editCentreModal" tabindex="-1" aria-labelledby="editCentreModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="editCentreModalLabel">Edit Assessment Centre</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <form id="editCentreForm">
+                <div class="mb-3">
+                  <label class="form-label">Centre Name</label>
+                  <input type="text" class="form-control" id="editCentreName">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Location</label>
+                  <input type="text" class="form-control" id="editCentreLocation">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Email</label>
+                  <input type="email" class="form-control" id="editCentreEmail">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Phone</label>
+                  <input type="tel" class="form-control" id="editCentrePhone">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Responsible Person</label>
+                  <input type="text" class="form-control" id="editResponsiblePerson">
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Assign Qualification</label>
+                  <select class="form-select" id="editQualificationAssigned">
+                    <option>Maintenance Planner</option>
+                    <option>Quality Controller</option>
+                    <option>Chemical Plant Operator</option>
+                  </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    const centres = [
+      {
+        name: "Center A",
+        location: "Johannesburg",
+        email: "contact@centera.co.za",
+        phone: "+27 11 123 4567",
+        person: "Ms. Lebo Mahlangu",
+        qualification: "Maintenance Planner"
+      },
+      {
+        name: "Center B",
+        location: "Cape Town",
+        email: "info@centerb.co.za",
+        phone: "+27 21 987 6543",
+        person: "Mr. Sipho Dlamini",
+        qualification: "Quality Controller"
+      }
+    ];
+
+    const tbody = document.getElementById("centreTableBody");
+    centres.forEach((centre, index) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${centre.name}</td>
+        <td>${centre.location}</td>
+        <td>${centre.email}</td>
+        <td>${centre.phone}</td>
+        <td>${centre.person}</td>
+        <td>${centre.qualification}</td>
+        <td>
+          <button class="btn btn-sm btn-purple" data-bs-toggle="modal" data-bs-target="#editCentreModal" onclick="loadCentre(${index})">Edit</button>Add commentMore actions
+          <button class="btn btn-sm btn-gold">Remove</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    function loadCentre(index) {
+      const centre = centres[index];
+      document.getElementById("editCentreName").value = centre.name;
+      document.getElementById("editCentreLocation").value = centre.location;
+      document.getElementById("editCentreEmail").value = centre.email;
+      document.getElementById("editCentrePhone").value = centre.phone;
+      document.getElementById("editResponsiblePerson").value = centre.person;
+      document.getElementById("editQualificationAssigned").value = centre.qualification;
+    }
+  </script>
+</body>
+</html>
